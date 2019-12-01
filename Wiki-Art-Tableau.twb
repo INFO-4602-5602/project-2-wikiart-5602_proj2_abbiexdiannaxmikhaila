@@ -25,7 +25,7 @@
             <column datatype='string' name='Category' ordinal='1' />
             <column datatype='string' name='Artist' ordinal='2' />
             <column datatype='string' name='Title' ordinal='3' />
-            <column datatype='integer' name='Year' ordinal='4' />
+            <column datatype='date' date-parse-format='yyyy' name='Year' ordinal='4' />
             <column datatype='string' name='Image URL' ordinal='5' />
             <column datatype='string' name='Painting Info URL' ordinal='6' />
             <column datatype='string' name='Artist Info URL' ordinal='7' />
@@ -129,14 +129,15 @@
           </metadata-record>
           <metadata-record class='column'>
             <remote-name>Year</remote-name>
-            <remote-type>20</remote-type>
+            <remote-type>7</remote-type>
             <local-name>[Year]</local-name>
             <parent-name>[WikiArtClean.csv]</parent-name>
             <remote-alias>Year</remote-alias>
             <ordinal>4</ordinal>
-            <local-type>integer</local-type>
-            <aggregation>Sum</aggregation>
+            <local-type>date</local-type>
+            <aggregation>Year</aggregation>
             <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
           </metadata-record>
           <metadata-record class='column'>
             <remote-name>Image URL</remote-name>
@@ -451,9 +452,17 @@
       <column datatype='integer' name='[Number of Records]' role='measure' type='quantitative' user:auto-column='numrec'>
         <calculation class='tableau' formula='1' />
       </column>
-      <column datatype='integer' name='[Year]' role='dimension' type='quantitative' />
+      <column datatype='date' name='[Year]' role='dimension' type='quantitative' />
+      <column-instance column='[Category - Split 1]' derivation='None' name='[none:Category - Split 1:nk]' pivot='key' type='nominal' />
       <column-instance column='[Category - Split 2]' derivation='None' name='[none:Category - Split 2:nk]' pivot='key' type='nominal' />
-      <layout dim-ordering='alphabetic' dim-percentage='0.526012' measure-ordering='alphabetic' measure-percentage='0.473988' show-structure='true' />
+      <column-instance column='[Year]' derivation='None' name='[none:Year:qk]' pivot='key' type='quantitative' />
+      <group hidden='true' name='[Exclusions (Main Category,Year)]' name-style='unqualified' user:auto-column='exclude'>
+        <groupfilter function='crossjoin'>
+          <groupfilter function='level-members' level='[none:Category - Split 1:nk]' />
+          <groupfilter function='level-members' level='[none:Year:qk]' />
+        </groupfilter>
+      </group>
+      <layout dim-ordering='alphabetic' dim-percentage='0.527938' measure-ordering='alphabetic' measure-percentage='0.472062' show-structure='true' />
       <style>
         <style-rule element='mark'>
           <encoding attr='color' field='[none:Category - Split 2:nk]' type='palette'>
@@ -503,6 +512,74 @@
               <bucket>&quot;Cubism&quot;</bucket>
             </map>
           </encoding>
+          <encoding attr='color' field='[none:Category - Split 1:nk]' type='palette'>
+            <map to='#499894'>
+              <bucket>&quot;Art Informel&quot;</bucket>
+            </map>
+            <map to='#499894'>
+              <bucket>&quot;Impressionism&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;Neoclassicism&quot;</bucket>
+            </map>
+            <map to='#59a14f'>
+              <bucket>&quot;Expressionism&quot;</bucket>
+            </map>
+            <map to='#79706e'>
+              <bucket>&quot;Neo-Expressionism&quot;</bucket>
+            </map>
+            <map to='#86bcb6'>
+              <bucket>&quot;Color Field Painting&quot;</bucket>
+            </map>
+            <map to='#8cd17d'>
+              <bucket>&quot;Cubism&quot;</bucket>
+            </map>
+            <map to='#9d7660'>
+              <bucket>&quot;Rococo&quot;</bucket>
+            </map>
+            <map to='#a0cbe8'>
+              <bucket>&quot;Abstract Expressionism&quot;</bucket>
+            </map>
+            <map to='#b07aa1'>
+              <bucket>&quot;High Renaissance&quot;</bucket>
+            </map>
+            <map to='#b6992d'>
+              <bucket>&quot;Magic Realism&quot;</bucket>
+            </map>
+            <map to='#bab0ac'>
+              <bucket>&quot;Minimalism&quot;</bucket>
+            </map>
+            <map to='#d37295'>
+              <bucket>&quot;Northern Renaissance&quot;</bucket>
+            </map>
+            <map to='#d4a6c8'>
+              <bucket>&quot;Baroque&quot;</bucket>
+            </map>
+            <map to='#d7b5a6'>
+              <bucket>&quot;Romanticism&quot;</bucket>
+            </map>
+            <map to='#e15759'>
+              <bucket>&quot;Pop Art&quot;</bucket>
+            </map>
+            <map to='#f1ce63'>
+              <bucket>&quot;Realism&quot;</bucket>
+            </map>
+            <map to='#f1ce63'>
+              <bucket>&quot;Surrealism&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;Abstract Art&quot;</bucket>
+            </map>
+            <map to='#fabfd2'>
+              <bucket>&quot;Early Renaissance&quot;</bucket>
+            </map>
+            <map to='#ff9d9a'>
+              <bucket>&quot;Lyrical Abstraction&quot;</bucket>
+            </map>
+            <map to='#ffbe7d'>
+              <bucket>&quot;Post-Impressionism&quot;</bucket>
+            </map>
+          </encoding>
         </style-rule>
       </style>
       <semantic-values>
@@ -521,38 +598,716 @@
             <column caption='Main Category' datatype='string' name='[Category - Split 1]' role='dimension' type='nominal' user:SplitFieldIndex='1' user:SplitFieldOrigin='[federated.09581650lcd0u018ps6x60qerf7v].[Category]'>
               <calculation class='tableau' formula='TRIM( SPLIT( [Category], &quot;,&quot;, 1 ) )' />
             </column>
-            <column caption='Subcategory' datatype='string' name='[Category - Split 2]' role='dimension' type='nominal' user:SplitFieldIndex='2' user:SplitFieldOrigin='[federated.09581650lcd0u018ps6x60qerf7v].[Category]'>
-              <calculation class='tableau' formula='IF TRIM( SPLIT( [Category], &quot;,&quot;, 2 ) ) == &apos;&apos; &#10;THEN &apos;None&apos; ELSE TRIM( SPLIT( [Category], &quot;,&quot;, 2 )) END' />
-            </column>
             <column datatype='string' name='[Category]' role='dimension' type='nominal' />
-            <column datatype='integer' name='[Year]' role='dimension' type='quantitative' />
+            <column datatype='date' name='[Year]' role='dimension' type='quantitative' />
+            <column-instance column='[Category - Split 1]' derivation='Attribute' name='[attr:Category - Split 1:nk]' pivot='key' type='nominal' />
             <column-instance column='[Category - Split 1]' derivation='Count' name='[cnt:Category - Split 1:qk]' pivot='key' type='quantitative' />
             <column-instance column='[Category - Split 1]' derivation='None' name='[none:Category - Split 1:nk]' pivot='key' type='nominal' />
-            <column-instance column='[Category - Split 2]' derivation='None' name='[none:Category - Split 2:nk]' pivot='key' type='nominal' />
             <column-instance column='[Year]' derivation='None' name='[none:Year:qk]' pivot='key' type='quantitative' />
           </datasource-dependencies>
-          <manual-sort column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Category - Split 2:nk]' direction='ASC'>
+          <filter class='categorical' column='[federated.09581650lcd0u018ps6x60qerf7v].[Exclusions (Main Category,Year)]'>
+            <groupfilter function='except' user:ui-domain='database' user:ui-enumeration='exclusive' user:ui-marker='enumerate'>
+              <groupfilter function='crossjoin'>
+                <groupfilter function='level-members' level='[none:Category - Split 1:nk]' />
+                <groupfilter function='level-members' level='[none:Year:qk]' />
+              </groupfilter>
+              <groupfilter function='union'>
+                <groupfilter function='crossjoin'>
+                  <groupfilter function='member' level='[none:Category - Split 1:nk]' member='&quot;Abstract Art&quot;' />
+                  <groupfilter function='union'>
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1883-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1884-01-01#' />
+                  </groupfilter>
+                </groupfilter>
+                <groupfilter function='crossjoin'>
+                  <groupfilter function='member' level='[none:Category - Split 1:nk]' member='&quot;Abstract Expressionism&quot;' />
+                  <groupfilter function='union'>
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1854-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1856-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1865-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1875-01-01#' />
+                  </groupfilter>
+                </groupfilter>
+                <groupfilter function='crossjoin'>
+                  <groupfilter function='member' level='[none:Category - Split 1:nk]' member='&quot;Baroque&quot;' />
+                  <groupfilter function='union'>
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1580-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1582-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1583-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1584-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1587-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1589-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1590-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1592-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1593-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1595-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1596-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1597-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1598-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1599-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1600-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1602-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1603-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1605-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1606-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1607-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1610-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1611-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1613-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1614-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1615-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1616-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1617-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1618-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1619-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1620-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1621-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1622-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1623-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1624-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1625-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1626-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1627-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1628-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1629-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1630-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1631-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1632-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1633-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1634-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1635-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1636-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1637-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1638-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1639-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1640-01-01#' />
+                  </groupfilter>
+                </groupfilter>
+                <groupfilter function='crossjoin'>
+                  <groupfilter function='member' level='[none:Category - Split 1:nk]' member='&quot;Early Renaissance&quot;' />
+                  <groupfilter function='union'>
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1422-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1425-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1426-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1427-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1430-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1431-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1432-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1435-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1436-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1441-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1443-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1445-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1447-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1449-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1450-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1452-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1456-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1459-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1460-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1464-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1465-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1470-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1473-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1475-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1476-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1478-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1480-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1481-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1483-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1485-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1486-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1487-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1488-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1490-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1492-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1495-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1500-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1506-01-01#' />
+                  </groupfilter>
+                </groupfilter>
+                <groupfilter function='crossjoin'>
+                  <groupfilter function='member' level='[none:Category - Split 1:nk]' member='&quot;Expressionism&quot;' />
+                  <groupfilter function='union'>
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1888-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1891-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1893-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1894-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1896-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1897-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1898-01-01#' />
+                  </groupfilter>
+                </groupfilter>
+                <groupfilter function='crossjoin'>
+                  <groupfilter function='member' level='[none:Category - Split 1:nk]' member='&quot;High Renaissance&quot;' />
+                  <groupfilter function='union'>
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1487-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1490-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1492-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1493-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1495-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1496-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1497-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1498-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1500-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1501-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1502-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1504-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1505-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1506-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1507-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1509-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1510-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1513-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1515-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1517-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1518-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1520-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1522-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1523-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1524-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1527-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1530-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1533-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1534-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1538-01-01#' />
+                  </groupfilter>
+                </groupfilter>
+                <groupfilter function='crossjoin'>
+                  <groupfilter function='member' level='[none:Category - Split 1:nk]' member='&quot;Impressionism&quot;' />
+                  <groupfilter function='union'>
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1840-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1859-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1862-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1863-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1866-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1867-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1868-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1869-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1870-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1872-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1873-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1874-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1875-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1876-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1877-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1878-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1879-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1880-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1881-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1882-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1883-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1884-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1885-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1886-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1887-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1888-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1889-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1890-01-01#' />
+                  </groupfilter>
+                </groupfilter>
+                <groupfilter function='crossjoin'>
+                  <groupfilter function='member' level='[none:Category - Split 1:nk]' member='&quot;Magic Realism&quot;' />
+                  <groupfilter function='union'>
+                    <groupfilter function='member' level='[none:Year:qk]' member='#2000-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#2002-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#2003-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#2005-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#2006-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#2007-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#2011-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#2012-01-01#' />
+                  </groupfilter>
+                </groupfilter>
+                <groupfilter function='crossjoin'>
+                  <groupfilter function='member' level='[none:Category - Split 1:nk]' member='&quot;Neo-Expressionism&quot;' />
+                  <groupfilter function='union'>
+                    <groupfilter function='member' level='[none:Year:qk]' member='#2000-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#2001-01-01#' />
+                  </groupfilter>
+                </groupfilter>
+                <groupfilter function='crossjoin'>
+                  <groupfilter function='member' level='[none:Category - Split 1:nk]' member='&quot;Neoclassicism&quot;' />
+                  <groupfilter function='union'>
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1750-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1753-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1761-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1762-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1765-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1767-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1772-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1773-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1774-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1776-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1777-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1779-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1780-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1782-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1784-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1785-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1786-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1787-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1788-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1789-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1790-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1791-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1792-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1793-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1794-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1796-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1797-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1798-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1799-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1800-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1801-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1802-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1803-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1804-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1805-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1806-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1807-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1808-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1810-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1811-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1812-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1813-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1814-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1815-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1816-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1817-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1819-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1820-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1821-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1824-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1825-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1826-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1827-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1828-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1829-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1832-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1833-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1835-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1837-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1843-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1845-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1848-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1850-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1852-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1853-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1854-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1862-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1863-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1866-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1875-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1877-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1879-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1882-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1895-01-01#' />
+                  </groupfilter>
+                </groupfilter>
+                <groupfilter function='crossjoin'>
+                  <groupfilter function='member' level='[none:Category - Split 1:nk]' member='&quot;Northern Renaissance&quot;' />
+                  <groupfilter function='union'>
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1415-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1424-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1430-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1432-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1434-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1435-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1436-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1438-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1440-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1441-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1444-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1445-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1446-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1449-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1450-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1458-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1460-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1462-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1464-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1465-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1466-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1468-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1470-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1475-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1478-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1480-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1481-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1485-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1490-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1491-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1493-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1498-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1500-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1503-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1506-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1507-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1508-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1509-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1510-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1513-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1514-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1515-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1516-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1517-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1519-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1520-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1521-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1523-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1524-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1525-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1527-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1528-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1529-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1530-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1532-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1533-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1534-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1535-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1536-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1539-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1540-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1544-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1550-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1552-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1553-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1559-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1560-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1565-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1567-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1568-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1570-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1572-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1575-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1576-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1577-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1578-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1585-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1588-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1590-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1600-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1605-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1607-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1611-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1625-01-01#' />
+                  </groupfilter>
+                </groupfilter>
+                <groupfilter function='crossjoin'>
+                  <groupfilter function='member' level='[none:Category - Split 1:nk]' member='&quot;Post-Impressionism&quot;' />
+                  <groupfilter function='union'>
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1883-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1884-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1888-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1889-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1890-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1891-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1892-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1893-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1894-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1895-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1896-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1897-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1898-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1899-01-01#' />
+                  </groupfilter>
+                </groupfilter>
+                <groupfilter function='crossjoin'>
+                  <groupfilter function='member' level='[none:Category - Split 1:nk]' member='&quot;Realism&quot;' />
+                  <groupfilter function='union'>
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1814-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1819-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1823-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1824-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1826-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1829-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1830-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1831-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1832-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1833-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1834-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1835-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1836-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1837-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1838-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1839-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1840-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1843-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1844-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1845-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1846-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1847-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1848-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1849-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1850-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1851-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1852-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1853-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1854-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1855-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1856-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1857-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1858-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1859-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1860-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1861-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1862-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1863-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1864-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1865-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1866-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1867-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1868-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1869-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1870-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1871-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1872-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1873-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1874-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1875-01-01#' />
+                  </groupfilter>
+                </groupfilter>
+                <groupfilter function='crossjoin'>
+                  <groupfilter function='member' level='[none:Category - Split 1:nk]' member='&quot;Rococo&quot;' />
+                  <groupfilter function='union'>
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1710-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1716-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1717-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1718-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1727-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1728-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1730-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1731-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1733-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1734-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1735-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1736-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1739-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1740-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1741-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1742-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1743-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1744-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1745-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1746-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1747-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1748-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1749-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1750-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1751-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1752-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1753-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1755-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1756-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1757-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1758-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1760-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1761-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1762-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1763-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1765-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1766-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1767-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1768-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1769-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1770-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1771-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1772-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1773-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1774-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1775-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1776-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1777-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1778-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1779-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1780-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1782-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1783-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1784-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1785-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1786-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1787-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1788-01-01#' />
+                  </groupfilter>
+                </groupfilter>
+                <groupfilter function='crossjoin'>
+                  <groupfilter function='member' level='[none:Category - Split 1:nk]' member='&quot;Romanticism&quot;' />
+                  <groupfilter function='union'>
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1762-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1765-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1771-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1772-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1773-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1774-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1775-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1777-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1778-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1779-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1781-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1782-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1783-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1784-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1786-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1790-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1791-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1793-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1794-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1796-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1797-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1798-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1799-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1800-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1801-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1802-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1804-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1805-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1806-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1807-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1808-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1809-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1810-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1811-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1812-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1813-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1814-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1815-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1816-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1817-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1818-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1819-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1820-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1821-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1822-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1823-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1824-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1825-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1826-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1827-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1828-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1829-01-01#' />
+                    <groupfilter function='member' level='[none:Year:qk]' member='#1830-01-01#' />
+                  </groupfilter>
+                </groupfilter>
+              </groupfilter>
+            </groupfilter>
+          </filter>
+          <filter class='categorical' column='[federated.09581650lcd0u018ps6x60qerf7v].[attr:Category - Split 1:nk]'>
+            <groupfilter function='except' user:ui-domain='relevant' user:ui-enumeration='exclusive' user:ui-marker='enumerate'>
+              <groupfilter function='level-members' level='[attr:Category - Split 1:nk]' />
+              <groupfilter function='member' level='[attr:Category - Split 1:nk]' member='%many-values%' />
+            </groupfilter>
+          </filter>
+          <manual-sort column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Category - Split 1:nk]' direction='ASC'>
             <dictionary>
-              <bucket>&quot;None&quot;</bucket>
-              <bucket>&quot;Abstract Expressionism&quot;</bucket>
-              <bucket>&quot;Color Field Painting&quot;</bucket>
-              <bucket>&quot;Cubism&quot;</bucket>
-              <bucket>&quot;Expressionism&quot;</bucket>
-              <bucket>&quot;Lyrical Abstraction&quot;</bucket>
-              <bucket>&quot;Magic Realism&quot;</bucket>
-              <bucket>&quot;Minimalism&quot;</bucket>
-              <bucket>&quot;Neo-Expressionism&quot;</bucket>
+              <bucket>&quot;Northern Renaissance&quot;</bucket>
+              <bucket>&quot;Early Renaissance&quot;</bucket>
+              <bucket>&quot;High Renaissance&quot;</bucket>
+              <bucket>&quot;Baroque&quot;</bucket>
+              <bucket>&quot;Rococo&quot;</bucket>
               <bucket>&quot;Neoclassicism&quot;</bucket>
-              <bucket>&quot;Pop Art&quot;</bucket>
-              <bucket>&quot;Post-Impressionism&quot;</bucket>
               <bucket>&quot;Romanticism&quot;</bucket>
+              <bucket>&quot;Realism&quot;</bucket>
+              <bucket>&quot;Impressionism&quot;</bucket>
+              <bucket>&quot;Abstract Expressionism&quot;</bucket>
+              <bucket>&quot;Abstract Art&quot;</bucket>
+              <bucket>&quot;Post-Impressionism&quot;</bucket>
+              <bucket>&quot;Expressionism&quot;</bucket>
+              <bucket>&quot;Cubism&quot;</bucket>
+              <bucket>&quot;Magic Realism&quot;</bucket>
               <bucket>&quot;Surrealism&quot;</bucket>
-              <bucket>%all%</bucket>
+              <bucket>&quot;Art Informel&quot;</bucket>
+              <bucket>&quot;Color Field Painting&quot;</bucket>
+              <bucket>&quot;Pop Art&quot;</bucket>
+              <bucket>&quot;Lyrical Abstraction&quot;</bucket>
+              <bucket>&quot;Neo-Expressionism&quot;</bucket>
+              <bucket>&quot;Minimalism&quot;</bucket>
             </dictionary>
           </manual-sort>
+          <slices>
+            <column>[federated.09581650lcd0u018ps6x60qerf7v].[attr:Category - Split 1:nk]</column>
+            <column>[federated.09581650lcd0u018ps6x60qerf7v].[Exclusions (Main Category,Year)]</column>
+          </slices>
           <aggregation value='true' />
         </view>
-        <style />
+        <style>
+          <style-rule element='axis'>
+            <encoding attr='space' class='0' field='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' field-type='quantitative' max='#1999-02-28 00:00:00#' min='#1900-11-03 00:00:00#' range-type='fixed' scope='cols' type='space' />
+          </style-rule>
+          <style-rule element='refline'>
+            <format attr='vertical-align' value='top' />
+            <format attr='fill-above' id='refline3' value='#00000000' />
+            <format attr='fill-below' id='refline3' value='#00000000' />
+            <format attr='line-visibility' id='refline3' value='on' />
+            <format attr='line-pattern-only' id='refline3' value='dashed' />
+            <format attr='stroke-color' id='refline3' value='#555555' />
+            <format attr='text-orientation' id='refline0' value='90' />
+            <format attr='text-orientation' id='refline1' value='90' />
+            <format attr='vertical-align' id='refline1' value='top' />
+            <format attr='text-orientation' value='90' />
+            <format attr='vertical-align' id='refline3' value='top' />
+            <format attr='text-orientation' id='refline3' value='90' />
+            <format attr='fill-above' id='refline6' value='#00000000' />
+            <format attr='fill-below' id='refline6' value='#00000000' />
+            <format attr='line-visibility' id='refline6' value='on' />
+            <format attr='line-pattern-only' id='refline6' value='dashed' />
+            <format attr='stroke-color' id='refline6' value='#555555' />
+            <format attr='line-visibility' value='on' />
+            <format attr='line-pattern-only' value='dashed' />
+            <format attr='stroke-size' value='1' />
+            <format attr='fill-above' id='refline7' value='#00000000' />
+            <format attr='fill-below' id='refline7' value='#00000000' />
+            <format attr='fill-above' id='refline8' value='#00000000' />
+            <format attr='fill-below' id='refline8' value='#00000000' />
+            <format attr='fill-above' id='refline9' value='#00000000' />
+            <format attr='fill-below' id='refline9' value='#00000000' />
+            <format attr='stroke-color' id='refline9' value='#555555' />
+            <format attr='stroke-color' value='#5555554b' />
+            <format attr='stroke-color' id='refline7' value='#555555' />
+            <format attr='stroke-color' id='refline8' value='#555555' />
+          </style-rule>
+          <style-rule element='refband'>
+            <format attr='line-visibility' id='refline11' value='on' />
+            <format attr='line-pattern-only' id='refline11' value='dashed' />
+            <format attr='stroke-size' id='refline11' value='1' />
+            <format attr='stroke-color' id='refline11' value='#555555' />
+            <format attr='line-visibility' id='refline0' value='on' />
+            <format attr='line-pattern-only' id='refline0' value='dashed' />
+            <format attr='stroke-size' id='refline0' value='1' />
+            <format attr='stroke-color' id='refline0' value='#555555' />
+            <format attr='fill-color' id='refline10' value='#898989' />
+            <format attr='line-visibility' id='refline10' value='on' />
+            <format attr='line-pattern-only' id='refline10' value='dashed' />
+            <format attr='stroke-color' id='refline10' value='#555555' />
+            <format attr='stroke-size' id='refline10' value='1' />
+            <format attr='line-visibility' id='refline1' value='on' />
+            <format attr='line-pattern-only' id='refline1' value='dashed' />
+            <format attr='stroke-color' id='refline1' value='#555555' />
+            <format attr='stroke-size' id='refline1' value='1' />
+            <format attr='line-visibility' id='refline4' value='on' />
+            <format attr='line-pattern-only' id='refline4' value='dashed' />
+            <format attr='stroke-size' id='refline4' value='1' />
+            <format attr='stroke-color' id='refline4' value='#555555' />
+            <format attr='fill-color' id='refline4' value='#d4d4d4' />
+            <format attr='line-visibility' id='refline12' value='on' />
+            <format attr='line-pattern-only' id='refline12' value='dashed' />
+            <format attr='stroke-size' id='refline12' value='1' />
+            <format attr='stroke-color' id='refline12' value='#555555' />
+            <format attr='line-visibility' id='refline5' value='on' />
+            <format attr='line-pattern-only' id='refline5' value='dashed' />
+            <format attr='stroke-color' id='refline5' value='#555555' />
+            <format attr='stroke-size' id='refline5' value='1' />
+            <format attr='line-visibility' id='refline13' value='on' />
+            <format attr='line-pattern-only' id='refline13' value='dashed' />
+            <format attr='stroke-color' id='refline13' value='#555555' />
+            <format attr='stroke-size' id='refline13' value='1' />
+            <format attr='fill-color' id='refline1' value='#eef1f3' />
+            <format attr='fill-color' id='refline13' value='#e9f3f2' />
+            <format attr='fill-color' id='refline12' value='#efebe8' />
+            <format attr='fill-color' id='refline11' value='#efebe8' />
+            <format attr='fill-color' id='refline0' value='#efebe8' />
+          </style-rule>
+        </style>
         <panes>
           <pane selection-relaxation-option='selection-relaxation-allow'>
             <view>
@@ -560,17 +1315,60 @@
             </view>
             <mark class='Automatic' />
             <encodings>
-              <color column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Category - Split 2:nk]' />
-              <size column='[federated.09581650lcd0u018ps6x60qerf7v].[cnt:Category - Split 1:qk]' />
+              <color column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Category - Split 1:nk]' />
+              <lod column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' />
             </encodings>
+            <dropline drop-when='selected' haslabel='false' x-axis='true' y-axis='true' />
+            <reference-line axis-column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' enable-instant-analytics='true' formula='constant' id='refline0' label='WWI' label-type='custom' paired-id='refline3' scope='per-table' symmetric='false' value='#1914-07-28#' value-column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' z-order='1' />
+            <reference-line axis-column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' enable-instant-analytics='true' formula='constant' id='refline1' label='' label-type='custom' paired-id='refline10' scope='per-table' symmetric='false' value='#1991-01-01#' value-column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' z-order='8' />
+            <reference-line axis-column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' enable-instant-analytics='true' formula='constant' id='refline10' label='Cold War Era' label-type='custom' paired-id='refline1' scope='per-table' symmetric='false' value='#1947-01-01#' value-column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' z-order='8' />
+            <reference-line axis-column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' enable-instant-analytics='true' formula='constant' id='refline11' label='WW2' label-type='custom' paired-id='refline2' scope='per-pane' symmetric='false' value='#1939-01-01#' value-column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' z-order='2' />
+            <reference-line axis-column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' enable-instant-analytics='true' formula='constant' id='refline12' label-type='none' paired-id='refline4' scope='per-table' symmetric='false' value='#1975-01-01#' value-column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' z-order='9' />
+            <reference-line axis-column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' enable-instant-analytics='true' formula='constant' id='refline13' label-type='none' paired-id='refline5' scope='per-table' symmetric='false' value='#1939-01-01#' value-column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' z-order='10' />
+            <reference-line axis-column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' enable-instant-analytics='true' formula='constant' id='refline2' label-type='none' paired-id='refline11' scope='per-pane' symmetric='false' value='#1945-09-01#' value-column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' z-order='2' />
+            <reference-line axis-column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' enable-instant-analytics='true' formula='constant' id='refline3' label-type='none' paired-id='refline0' scope='per-table' symmetric='false' value='#1918-01-01#' value-column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' z-order='1' />
+            <reference-line axis-column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' enable-instant-analytics='true' formula='constant' id='refline4' label='Vietnam War' label-type='custom' paired-id='refline12' scope='per-table' symmetric='false' value='#1955-11-01#' value-column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' z-order='3' />
+            <reference-line axis-column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' enable-instant-analytics='true' formula='constant' id='refline5' label='Great Depression' label-type='custom' paired-id='refline13' scope='per-table' symmetric='false' value='#1929-01-01#' value-column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' z-order='10' />
+            <reference-line axis-column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' enable-instant-analytics='true' formula='constant' id='refline6' label='Russian Revolution' label-type='custom' scope='per-pane' value='#1917-01-01#' value-column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' z-order='4' />
+            <reference-line axis-column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' enable-instant-analytics='true' formula='constant' id='refline7' label='Mussolini comes into power in Italy' label-type='custom' scope='per-table' value='#1922-01-01#' value-column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' z-order='5' />
+            <reference-line axis-column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' enable-instant-analytics='true' formula='constant' id='refline8' label='Hilter comes into power in Germany' label-type='custom' scope='per-table' value='#1933-01-01#' value-column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' z-order='6' />
+            <reference-line axis-column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' enable-instant-analytics='true' formula='constant' id='refline9' label='Apollo 11 lands on the moon' label-type='custom' scope='per-pane' value='#1969-01-01#' value-column='[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]' z-order='7' />
           </pane>
         </panes>
-        <rows>[federated.09581650lcd0u018ps6x60qerf7v].[none:Category - Split 1:nk]</rows>
+        <rows>[federated.09581650lcd0u018ps6x60qerf7v].[cnt:Category - Split 1:qk]</rows>
         <cols>[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]</cols>
       </table>
       <simple-id uuid='{CC8EBD3C-086B-44E0-98F1-3DF0DD223BBC}' />
     </worksheet>
   </worksheets>
+  <dashboards>
+    <dashboard name='Story 1' type='storyboard'>
+      <style />
+      <size maxheight='964' maxwidth='1016' minheight='964' minwidth='1016' />
+      <zones>
+        <zone h='100000' id='2' type='layout-basic' w='100000' x='0' y='0'>
+          <zone h='98340' id='1' param='vert' removable='false' type='layout-flow' w='98426' x='787' y='830'>
+            <zone h='3423' id='3' type='title' w='98426' x='787' y='830' />
+            <zone h='10477' id='4' is-fixed='true' paired-zone-id='5' removable='false' type='flipboard-nav' w='98426' x='787' y='4253' />
+            <zone h='84440' id='5' paired-zone-id='4' removable='false' type='flipboard' w='98426' x='787' y='14730'>
+              <flipboard active-id='1' nav-type='caption' show-nav-arrows='true'>
+                <story-points>
+                  <story-point captured-sheet='' id='1' />
+                </story-points>
+              </flipboard>
+            </zone>
+          </zone>
+          <zone-style>
+            <format attr='border-color' value='#000000' />
+            <format attr='border-style' value='none' />
+            <format attr='border-width' value='0' />
+            <format attr='margin' value='8' />
+          </zone-style>
+        </zone>
+      </zones>
+      <simple-id uuid='{C80EFEC5-D751-4CB1-AC72-3CEDCDADA618}' />
+    </dashboard>
+  </dashboards>
   <windows source-height='30'>
     <window class='worksheet' maximized='true' name='Sheet 1'>
       <cards>
@@ -593,8 +1391,8 @@
           </strip>
         </edge>
         <edge name='right'>
-          <strip size='100'>
-            <card pane-specification-id='0' param='[federated.09581650lcd0u018ps6x60qerf7v].[none:Category - Split 2:nk]' type='color' />
+          <strip size='170'>
+            <card pane-specification-id='0' param='[federated.09581650lcd0u018ps6x60qerf7v].[none:Category - Split 1:nk]' type='color' />
           </strip>
         </edge>
       </cards>
@@ -602,6 +1400,7 @@
         <highlight>
           <color-one-way>
             <field>[federated.09581650lcd0u018ps6x60qerf7v].[none:Category - Split 1:nk]</field>
+            <field>[federated.09581650lcd0u018ps6x60qerf7v].[none:Category - Split 2:nk]</field>
             <field>[federated.09581650lcd0u018ps6x60qerf7v].[none:Category:nk]</field>
             <field>[federated.09581650lcd0u018ps6x60qerf7v].[none:Year:qk]</field>
           </color-one-way>
@@ -609,244 +1408,585 @@
       </viewpoint>
       <simple-id uuid='{D0CF24A5-07FF-4185-A3E8-09A04AC1615B}' />
     </window>
+    <window class='dashboard' name='Story 1'>
+      <viewpoints />
+      <active id='-1' />
+      <simple-id uuid='{B4E94923-29FB-4162-BA11-AD3948397467}' />
+    </window>
   </windows>
   <thumbnails>
     <thumbnail height='192' name='Sheet 1' width='192'>
       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
-      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
-      TSCXt5r/H6HxHVXvxGMbAAAAAElFTkSuQmCC
+      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
+      SUVORK5CYII=
     </thumbnail>
   </thumbnails>
 </workbook>
