@@ -1,0 +1,19 @@
+.main-content {
+  padding: 2em 1em;
+}
+
+img, .image {
+  position: relative;
+  width: 100%;
+}
+section {
+  margin-bottom: 2rem;
+}
+
+.right-border {
+  border-right: 1px solid darkgray;
+}
+
+.left-border {
+  border-left: 1px solid darkgray;
+}
