@@ -17,3 +17,8 @@ section {
 .left-border {
   border-left: 1px solid darkgray;
 }
+
+.content {
+  max-height: 80vh;
+  overflow: scroll;
+}
