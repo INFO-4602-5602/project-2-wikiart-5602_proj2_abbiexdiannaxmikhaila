@@ -1,0 +1,15 @@
+<section id="viz-four”>
+        <div class="grid-x grid-padding-x">
+          <div class="cell small-12 medium-7 xlarge-6 flex-container flex-dir-column align-center">
+            <img src= "viz-four.png">
+            <div class="">
+              <small>Note: This only includes art movements where the count of art for at least one year in the 20th century was over 10 pieces from the surveyed art.</small>
+            </div>
+          </div>
+          <div class="cell content small-12 medium-5 xlarge-6 small-only-text-center">
+            <h4>Opposing Attitudes about the Future Portrayed in Art Over Time</h4>
+            <p>These two line charts show how the ratings for optimism and pessimism portrayed in art fluctuate over time. It’s interesting that art can make you feel hopeful about the future, or that it can do the opposite, but we see this to be precisely the case around 1910 as well as the 1940s, when there are spikes observed across many of the categories. Around 1910 is when the United States became a world power, which could be the cause of both optimism and pessimism about the future, depending on who you asked. </p>
+            <p>The 1940s was a similar case, with World War II beginning, which probably would have been reason for pessimism, but also optimism as the Great Depression began to recede and the economy found new life.</p>
+          </div>
+        </div>
+      </section>
