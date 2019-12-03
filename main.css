@@ -2,12 +2,26 @@
   padding: 2em 1em;
 }
 
+.about {
+  padding-top: 99px;
+  max-width: 1000px;
+  margin: auto;
+}
+
+.position-fixed {
+  width: 100%;
+  position: fixed;
+  z-index: 2;
+}
+
 img, .image {
   position: relative;
   width: 100%;
 }
 section {
-  margin-bottom: 2rem;
+  /*margin-bottom: 2rem;*/
+  height: 100vh;
+  padding-top: 67px;
 }
 
 .right-border {
@@ -19,6 +33,7 @@ section {
 }
 
 .content {
+  /*position: relative;*/
   max-height: 80vh;
   overflow: scroll;
 }

@@ -6,21 +6,26 @@
     <title>Wiki Art</title>
     <link rel="stylesheet" href="foundation.css">
     <link rel="stylesheet" href="main.css">
-    <!--script src="script.js"></script-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="/js/vendor/foundation.min.js"></script>
+    <script src="/js/app.js"></script>
   </head>
   <body>
-    <div class="top-bar">
+    <div class="position-fixed">
+      <nav class="top-bar" data-topbar role="navigation">
       <div class="top-bar-left">
-        <span class="menu-text">Is Art Political?</span>
+        <span class="menu-text"><h3>Is Art Political?</h3></span>
       </div>
       <div class="top-bar-right">
-        <ul class="menu">
+        <ul class="menu" data-smooth-scroll>
           <li><a href="#viz-one">Art Movements</a></li>
           <li><a href="#viz-two">Emotions</a></li>
           <li><a href="#viz-three">Level of Detail</a></li>
-          <li><a href="#viz-four">Viz Four</a></li>
+          <li><a href="#viz-four">Pessimism vs. Optimism</a></li>
+          <li><a href="/about.html">About</a></li>
         </ul>
       </div>
+      </nav>
     </div>
     <div class="main-content">
       <section id="viz-one">
@@ -31,7 +36,7 @@
               <small>Note: This only includes art movements where the count of art for at least one year in the 20th century was over 10 pieces from the surveyed art.</small>
             </div>
           </div>
-          <div class="cell content small-12 medium-5 xlarge-6 small-only-text-center">
+          <div class="cell content small-12 medium-5 xlarge-6 small-only-text-center flex-container flex-dir-column">
             <h4>Art Movements Throughout the 20th Century.</h4>
             <p>The line chart shows the popular art movements of the 20th century. When thinking about art movements, you might often relate them to main events in history and what the catalysts were. In this line chart, two moments in history stand out: the events leading up to WWII and the Civil Rights Movement.</p>
             <p>Surrealism begins as a movement after WWI and is at its peak right before the start of WWII. At this time, the world is suffering economically, which gives rise to fascist and communist movements. Mussolini comes into power in Italy in 1922 and Hitler comes into power in Germany in 1933. After both of these events, there is a small spike in Surrealism art. </p>
@@ -50,22 +55,22 @@
               <small>Note: This only includes art movements where the count of art for at least one year in the 20th century was over 10 pieces from the surveyed art.</small>
             </div>
           </div>
-          <div class="cell content small-12 medium-5 xlarge-6 small-only-text-center">
+          <div class="cell content small-12 medium-5 xlarge-6 small-only-text-center flex-container flex-dir-column">
             <h4>Seven Emotions produced by Art Throughout the 20th Century.</h4>
             <p>This line chart shows the average Anger, Disgust, Fear, Happiness, Love, Surprise and Trust responses to art over time. Negative emotions (Anger, Disgust and Fear) are pictured in warm colors, while positive emotions (Happiness, Love, Trust) are pictured in cool colors. Surprise is in grey.</p>
             <p>Happiness (Green) decreases from 0.5 in 1900 to about 0.1 throughout the 1940s-1960s. Meanwhile, Surprise (Grey) increases from about 0.1 to 0.4 over this same time scale. This suggests a shift in the kind of art people were making at the time, perhaps in line with those described in the previous section.</p>
           </div>
         </div>
       </section>
-      <section id="v">
+      <section id="viz-two-b">
         <div class="grid-x grid-padding-x">
-          <div class="cell small-12 medium-7 xlarge-6 flex-container flex-dir-column align-center">
+          <div class="cell small-12 medium-7 xlarge-6 flex-container flex-dir-column align-center flex-container flex-dir-column align-center" >
             <img src= "viz-two-2.png">
             <div class="">
               <small>Note: This only includes art movements where the count of art for at least one year in the 20th century was over 10 pieces from the surveyed art.</small>
             </div>
           </div>
-          <div class="cell content small-12 medium-5 xlarge-6 small-only-text-center">
+          <div class="cell content small-12 medium-5 xlarge-6 small-only-text-center flex-container flex-dir-column">
             <h4>Emotions from 1970-1980.</h4>
             <p>A closer look at 1970-1980 and the emotional shift in 1975.</p>
             <p>The time between 1970 and 1975 is particularly interesting from a U.S. history perspective. The U.S. involvement in the Vietnam war was drawing to a close, and Nixon became embroiled in the Watergate scandal from 1972-1974. Some considered the war futile, while others considered it a failure of American forces to exert power and control. Many viewed Nixon's scandal as a breakdown of truth and justice. As a result, many Americans felt disillusioned and angry*. In this visualization, in 1975, we see the three positive emotions (Happiness, Love and Trust) drop off, while the three negative emotions increase (Anger, Disgust, Fear). It's worth noting that the number of art pieces after 1970 is relatively low, so this may not actually be correlated.  </p>
